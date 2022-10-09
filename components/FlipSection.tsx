@@ -1,6 +1,8 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import Confetti from "react-confetti";
 import WalletButton from "./WalletButton";
+import useWindowSize from "react-use/lib/useWindowSize";
 import { TextField } from "@mui/material";
 import { useCoinflip } from "../hooks/useCoinflip";
 import { PublicKey } from "@solana/web3.js";
@@ -23,7 +25,7 @@ function FlipSection({ connected, publicKey }: any) {
     transactionPending,
     loading,
   } = useCoinflip();
-
+  const { width, height } = useWindowSize();
   useEffect(() => {
     const getPlayAccount = async () => {
       try {
@@ -147,6 +149,19 @@ function FlipSection({ connected, publicKey }: any) {
                     </button>
                   </>
                 )}
+                {userStatus == "lost" && (
+                  <>
+                    <h1 className="mb-10 text-4xl font-bold uppercase text-red-400">
+                      you lost!
+                    </h1>
+                    <button
+                      onClick={() => setUserStatus("initial")}
+                      className="py-3 px-5 mx-1 mt-4 rounded-md hover:text-black wallet-button"
+                    >
+                      Try again
+                    </button>
+                  </>
+                )}
 
                 {userStatus == "play" && (
                   <>
@@ -165,12 +180,18 @@ function FlipSection({ connected, publicKey }: any) {
                   </>
                 )}
                 {userStatus == "won" && (
-                  <button
-                    onClick={handleClaimReward}
-                    className="py-3 px-5 mt-4 rounded-md hover:text-black wallet-button"
-                  >
-                    Claim Reward
-                  </button>
+                  <>
+                    <h1 className="mb-10 text-4xl font-bold uppercase text-green-300">
+                      you Won!
+                    </h1>
+                    <button
+                      onClick={handleClaimReward}
+                      className="py-3 px-5 mt-4 rounded-md hover:text-black wallet-button"
+                    >
+                      Claim Reward
+                    </button>
+                    <Confetti width={width} height={height} />
+                  </>
                 )}
               </>
             )}
