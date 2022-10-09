@@ -55,12 +55,11 @@ export const useCoinflip = () => {
       if (program && publicKey) {
         try {
           const playResults = await program.account.playResults.all();
-
-          const winnings = playResults.filter(
-            (result) =>
-              result.account.vault.toString() == vault.toString() &&
-              result.account.isWinner == true
-          );
+          const filterMax = (fn, c) => (x) => c && fn(x) && c--;
+          const filter = (result) =>
+            result.account.vault.toString() == vault.toString() &&
+            result.account.isWinner == true;
+          const winnings = playResults.filter(filterMax(filter, 4));
           const winningsAccount: any = winnings.map((win) => win.account);
           setWinnings(winningsAccount);
         } catch (error) {

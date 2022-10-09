@@ -131,7 +131,7 @@ function FlipSection({ connected, publicKey }: any) {
               </button>
             ) : (
               <>
-                {(userStatus == "initial" || userStatus == "lost") && (
+                {userStatus == "initial" && (
                   <>
                     <TextField
                       label="Play Amount (sol)"

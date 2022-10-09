@@ -67,8 +67,8 @@ function Stats() {
               <div>
                 <div className=" font-semibold text-white">
                   Wallet ({truncate(win?.user.toString(), 5)}) flipped{" "}
-                  {win?.amount.toNumber() / 0.7 / 2 / 1000000000} sol and
-                  doubled{" "}
+                  {(win?.amount.toNumber() / 0.7 / 2 / 1000000000).toFixed(2)}{" "}
+                  sol and doubled{" "}
                 </div>
                 <div className="mt-0.5 text-xs text-white/60 leading-6">
                   {formatDistance(
