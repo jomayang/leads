@@ -1,0 +1,130 @@
+{
+  "version": "0.1.0",
+  "name": "coinflip",
+  "instructions": [
+    {
+      "name": "initPlayingState",
+      "accounts": [
+        { "name": "user", "isMut": true, "isSigner": true },
+        { "name": "userStats", "isMut": true, "isSigner": false },
+        { "name": "vault", "isMut": true, "isSigner": false },
+        { "name": "vaultCreator", "isMut": false, "isSigner": false },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "startPlay",
+      "accounts": [
+        { "name": "user", "isMut": true, "isSigner": true },
+        { "name": "userStats", "isMut": true, "isSigner": false },
+        { "name": "vault", "isMut": true, "isSigner": false },
+        { "name": "vaultCreator", "isMut": false, "isSigner": false },
+        { "name": "royaltyAccount", "isMut": true, "isSigner": false },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "amount", "type": "u64" }]
+    },
+    {
+      "name": "heads",
+      "accounts": [
+        { "name": "user", "isMut": true, "isSigner": true },
+        { "name": "playResults", "isMut": true, "isSigner": false },
+        { "name": "userStats", "isMut": true, "isSigner": false },
+        { "name": "vault", "isMut": true, "isSigner": false },
+        { "name": "vaultCreator", "isMut": false, "isSigner": false },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "tails",
+      "accounts": [
+        { "name": "user", "isMut": true, "isSigner": true },
+        { "name": "playResults", "isMut": true, "isSigner": false },
+        { "name": "userStats", "isMut": true, "isSigner": false },
+        { "name": "vault", "isMut": true, "isSigner": false },
+        { "name": "vaultCreator", "isMut": false, "isSigner": false },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "claimReward",
+      "accounts": [
+        { "name": "user", "isMut": true, "isSigner": true },
+        { "name": "userStats", "isMut": true, "isSigner": false },
+        { "name": "vault", "isMut": true, "isSigner": false },
+        { "name": "vaultCreator", "isMut": false, "isSigner": false },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "initHouse",
+      "accounts": [
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "vault", "isMut": true, "isSigner": false },
+        { "name": "vaultCreator", "isMut": false, "isSigner": true },
+        { "name": "feeAccount", "isMut": false, "isSigner": false },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "feeAmount", "type": "u8" },
+        { "name": "winReward", "type": "u8" }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "UserStats",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "lamportsPlayed", "type": "u64" },
+          { "name": "status", "type": "u8" },
+          { "name": "winAmount", "type": "u64" },
+          { "name": "bump", "type": "u8" }
+        ]
+      }
+    },
+    {
+      "name": "PlayResults",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "user", "type": "publicKey" },
+          { "name": "vault", "type": "publicKey" },
+          { "name": "isWinner", "type": "bool" },
+          { "name": "amount", "type": "u64" },
+          { "name": "timestamp", "type": "i64" }
+        ]
+      }
+    },
+    {
+      "name": "HouseState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "feeAccount", "type": "publicKey" },
+          { "name": "feeAmount", "type": "u8" },
+          { "name": "winReward", "type": "u8" },
+          { "name": "lastPlay", "type": "u8" },
+          { "name": "bump", "type": "u8" }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "AmountMustBeGreaterThanZero",
+      "msg": "Amount must be greater than zero."
+    },
+    {
+      "code": 6001,
+      "name": "NotEnoughInHouse",
+      "msg": "The house wallet can't or won't payout this amount.."
+    }
+  ]
+}
