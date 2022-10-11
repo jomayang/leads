@@ -24,6 +24,7 @@ function FlipSection({ connected, publicKey }: any) {
     claimReward,
     transactionPending,
     loading,
+    tryAgain,
   } = useCoinflip();
   const { width, height } = useWindowSize();
   useEffect(() => {
@@ -103,6 +104,13 @@ function FlipSection({ connected, publicKey }: any) {
     setAction("claim-reward");
   };
 
+  const handlePlayAgain = () => {
+    const vaultCreatorStr: any =
+      process.env.NEXT_PUBLIC_VAULT_CREATOR?.toString();
+    const vaultCreator: PublicKey = new PublicKey(vaultCreatorStr);
+    tryAgain(vaultCreator);
+  };
+
   return (
     <div className="flex grow items-center text-center flex-col">
       <div className="py-8">
@@ -155,10 +163,10 @@ function FlipSection({ connected, publicKey }: any) {
                       you lost!
                     </h1>
                     <button
-                      onClick={() => setUserStatus("initial")}
+                      onClick={handlePlayAgain}
                       className="py-3 px-5 mx-1 mt-4 rounded-md hover:text-black wallet-button"
                     >
-                      Try again
+                      Play again
                     </button>
                   </>
                 )}

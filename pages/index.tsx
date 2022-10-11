@@ -20,7 +20,7 @@ const Home: NextPage = () => {
       <div className="lg:flex px-10 xl:px-20">
         <Sidebar />
         <FlipSection connected={connected} publicKey={publicKey} />
-        <Stats />
+        <Stats connected={connected} publicKey={publicKey} />
       </div>
     </div>
   );

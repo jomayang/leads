@@ -92,24 +92,6 @@ export const useCoinflip = () => {
     }
   };
 
-  // const fetchPlayingStep = async (vault: PublicKey) => {
-  //   if (program && publicKey) {
-  //     try {
-  //       setTransactionPending(true);
-  //       const [userStatsPda] = findProgramAddressSync(
-  //         [utf8.encode("user-stats"), publicKey.toBuffer(), vault.toBuffer()],
-  //         program.programId
-  //       );
-  //       const userStats = await program.account.userStats.fetch(userStatsPda);
-  //       setTransactionPending(false);
-  //       return { userStats, userStatsPda };
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       setTransactionPending(false);
-  //     }
-  //   }
-  // }
   const fetchPlayingAccount = async (vault: PublicKey) => {
     if (program && publicKey) {
       try {
@@ -372,6 +354,44 @@ export const useCoinflip = () => {
     }
   };
 
+  const tryAgain = async (vaultCreator: PublicKey) => {
+    if (program && publicKey) {
+      try {
+        setLoading(true);
+        setTransactionPending(true);
+
+        const [vaultPda] = findProgramAddressSync(
+          [utf8.encode("vault"), vaultCreator.toBuffer()],
+          program.programId
+        );
+
+        const [userStatsPda] = findProgramAddressSync(
+          [
+            utf8.encode("user-stats"),
+            publicKey.toBuffer(),
+            vaultPda.toBuffer(),
+          ],
+          program.programId
+        );
+        console.log("vault pda: ", vaultPda.toString());
+        console.log("userstats pda: ", userStatsPda.toString());
+        const tx = await program.methods
+          .tryAgain()
+          .accounts({
+            user: publicKey,
+            userStats: userStatsPda,
+            vault: vaultPda,
+            vaultCreator: vaultCreator,
+          })
+          .rpc();
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+        setTransactionPending(false);
+      }
+    }
+  };
   return {
     initializeHouse,
     initializePlayAccount,
@@ -381,6 +401,7 @@ export const useCoinflip = () => {
     fetchAssociatedHouse,
     fetchPlayingAccount,
     claimReward,
+    tryAgain,
     winnings,
     transactionPending,
     loading,
