@@ -2,7 +2,16 @@ import * as anchor from "@project-serum/anchor";
 import { useEffect, useMemo, useState } from "react";
 import { COINFLIP_PROGRAM_ID } from "./index";
 import coinflipIDL from "../idl/coinflip-idl.json";
-import { SystemProgram, PublicKey } from "@solana/web3.js";
+import {
+  SystemProgram,
+  PublicKey,
+  Keypair,
+  Transaction,
+  LAMPORTS_PER_SOL,
+  Connection,
+  sendAndConfirmRawTransaction,
+} from "@solana/web3.js";
+import * as web3 from "@solana/web3.js";
 import { utf8 } from "@project-serum/anchor/dist/cjs/utils/bytes";
 import { findProgramAddressSync } from "@project-serum/anchor/dist/cjs/utils/pubkey";
 import {
@@ -31,18 +40,19 @@ export const useCoinflip = () => {
   const [transactionPending, setTransactionPending] = useState(false);
   const [loading, setLoading] = useState(false);
   const [winnings, setWinnings] = useState([]);
-
+  const [myProvider, setMyProvider] = useState<any>();
   const coinflipIdl: any = coinflipIDL;
   const { connection } = useConnection();
   const { publicKey } = useWallet();
   const anchorWallet = useAnchorWallet();
   const program = useMemo(() => {
     if (anchorWallet) {
-      const provider = new anchor.AnchorProvider(
+      const provider: any = new anchor.AnchorProvider(
         connection,
         anchorWallet,
         anchor.AnchorProvider.defaultOptions()
       );
+      setMyProvider(provider);
 
       return new anchor.Program(coinflipIdl, COINFLIP_PROGRAM_ID, provider);
     }
@@ -193,8 +203,26 @@ export const useCoinflip = () => {
           ],
           program.programId
         );
-
-        const tx = await program.methods
+        console.log("mehdioh");
+        let fromKeypair = Keypair.generate();
+        let toKeypair = Keypair.generate();
+        let transaction = new Transaction();
+        const instruction = SystemProgram.transfer({
+          fromPubkey: fromKeypair.publicKey,
+          toPubkey: toKeypair.publicKey,
+          lamports: LAMPORTS_PER_SOL,
+        });
+        transaction.add(
+          SystemProgram.transfer({
+            fromPubkey: fromKeypair.publicKey,
+            toPubkey: toKeypair.publicKey,
+            lamports: LAMPORTS_PER_SOL,
+          })
+        );
+        console.log("second transaction-->", instruction);
+        const blockhash = await connection.getLatestBlockhash("finalized");
+        let startPlayTx = new Transaction(blockhash);
+        const ix = await program.methods
           .startPlay(new anchor.BN(amount))
           .accounts({
             user: publicKey,
@@ -203,7 +231,26 @@ export const useCoinflip = () => {
             vaultCreator: vaultCreator,
             royaltyAccount: royaltyAccount,
           })
-          .rpc();
+          .instruction();
+        startPlayTx.add(ix);
+        startPlayTx.feePayer = anchorWallet.publicKey;
+        // startPlayTx.serialize;
+        console.log("the connection 1 ; ", connection);
+        const conn2 = new Connection(
+          "https://api.devnet.solana.com",
+          "confirmed"
+        );
+        console.log("connection2: ", ix);
+        // const tx = connection.confirmTransaction(startPlayTx)
+        console.log("transaction-->", startPlayTx);
+        // const provider = anchor.getProvider();
+        console.log("px: ", myProvider);
+        // myProvider.
+        const px = await myProvider.sendAndConfirm(startPlayTx);
+        // const signature = await anchorWallet.signTransaction(startPlayTx);
+        // startPlayTx.sign();
+
+        // await connection.confirmTransaction(ix)
       } catch (error) {
         console.log(error);
       } finally {

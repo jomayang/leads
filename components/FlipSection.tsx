@@ -63,6 +63,7 @@ function FlipSection({ connected, publicKey }: any) {
     const vaultCreatorStr: any =
       process.env.NEXT_PUBLIC_VAULT_CREATOR?.toString();
     const vaultCreator: PublicKey = new PublicKey(vaultCreatorStr);
+    console.log("the vault creator: ", vaultCreatorStr, vaultCreator);
     initializePlayAccount(vaultCreator);
     setAction("create-account");
   };
