@@ -70,7 +70,7 @@ const Home: NextPage = () => {
             <thead>
               <tr>
                 <th></th>
-                <th>Name</th>
+                <th>Full Name</th>
                 <th>Number</th>
                 <th>Wilaya</th>
                 <th>Address</th>
